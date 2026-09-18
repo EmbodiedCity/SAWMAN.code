@@ -1,0 +1,13 @@
+{
+  "model_root": "weights/wan1p3b/base",
+  "metadata": "data/metadata.jsonl",
+  "output_dir": "outputs/wan1p3b/sft",
+  "backend": "ddp",
+  "num_processes": 8,
+  "num_epochs": 3,
+  "save_steps": 2000,
+  "learning_rate": 1e-05,
+  "gradient_checkpointing": false,
+  "initialize_model_on_cpu": false,
+  "resume_from_checkpoint": null
+}

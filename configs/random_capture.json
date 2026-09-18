@@ -1,0 +1,21 @@
+{
+  "output_dir": "data/random",
+  "boundary_max": [
+    100,
+    100,
+    0
+  ],
+  "boundary_min": [
+    -100,
+    -100,
+    -50
+  ],
+  "start_points": [
+    [
+      0,
+      0,
+      -10
+    ]
+  ],
+  "num_actions": 500
+}

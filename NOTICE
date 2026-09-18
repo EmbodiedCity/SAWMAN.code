@@ -1,0 +1,20 @@
+Sawman
+
+This source distribution incorporates a reduced subset of DiffSynth-Studio
+(package metadata version 2.0.17), by the ModelScope/DiffSynth-Studio contributors,
+under the Apache License, Version 2.0. The upstream license is retained in LICENSES/Apache-2.0.txt.
+The diffsynth/ runtime and src/sft/train.py derive from that project and
+remain under Apache-2.0. The repository root MIT LICENSE applies to original
+SAWMAN additions.
+
+Local changes include native six-view navigation distillation, task launchers,
+relative-path configurations, direct checkpoint output, AirSim collection
+integration, preprocessing, and contract tests. The two collection sources were
+provided by the Sawman project and are adapted as collect_random.py and
+collect_chain.py. Model checkpoints, simulator assets and captured data are not
+included in this source distribution.
+
+The release narrows upstream model registration and runtime dependencies.
+The Wan pipeline default conditioning text is Unicode-escaped without changing
+its decoded value. Collectors have English documentation and explicit AirSim
+roll/pitch conversion. The overview image is supplied by the SAWMAN project.

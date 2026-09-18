@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sawman"
+version = "0.1.0"
+description = "Sawman six-view navigation: data collection, SFT and native video distillation"
+authors = [{name = "Sawman contributors"}]
+license = {text = "MIT AND Apache-2.0"}
+requires-python = ">=3.10.1"
+dependencies = [
+    "torch>=2.6,<2.7",
+    "torchvision==0.21.0",
+    "numpy==1.26.4",
+    "transformers==4.57.6",
+    "imageio",
+    "imageio[ffmpeg]",
+    "safetensors",
+    "einops",
+    "sentencepiece",
+    "protobuf",
+    "modelscope",
+    "ftfy",
+    "pandas",
+    "accelerate==1.14.0",
+    "deepspeed==0.19.2",
+    "Pillow",
+    "scipy",
+    "scikit-image",
+    "tqdm",
+    "opencv-python<4.12",
+    "peft==0.19.1",
+    "datasets",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.packages.find]
+where = ["./"]
+include = ["diffsynth", "diffsynth.*"]
+
+[tool.setuptools]
+include-package-data = true
+license-files = ["LICENSE", "LICENSES/Apache-2.0.txt", "NOTICE"]
