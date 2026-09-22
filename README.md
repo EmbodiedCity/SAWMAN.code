@@ -10,7 +10,7 @@ and offline inference** workflows for Wan2.2 TI2V 5B and Wan2.1 Fun-InP 1.3B.
 
 The figure illustrates the broader project. The current code release covers the
 world-model workflows below; a closed-loop VLM navigation agent and benchmark
-runner are not included. Selected model weights are available on [Hugging Face](https://huggingface.co/EmbodiedCity/SAWMAN). Simulator assets and upstream base models are supplied separately.
+runner are not included. Model release: [Hugging Face](https://huggingface.co/EmbodiedCity/SAWMAN) (upload pending repository write access). Simulator assets and upstream base models are supplied separately.
 
 ## Quick start
 
@@ -166,7 +166,10 @@ Resume requires the original matching configuration and complete eight-rank trai
 
 ## 5. Download weights and run inference
 
-The [model release](https://huggingface.co/EmbodiedCity/SAWMAN) contains the selected
+**Upload status:** weights are prepared and GPU-tested, but are not yet downloadable.
+The commands below apply after the Hugging Face upload is complete.
+
+The prepared [model release](https://huggingface.co/EmbodiedCity/SAWMAN) contains the selected
 Stage3 `checkpoint-100` EMA for each backbone, with portable inference configs
 and SHA-256 checksums. They are full BF16 DiT weights, not LoRA adapters or
 standalone Diffusers pipelines. Both support two-step inference; 5B was trained
