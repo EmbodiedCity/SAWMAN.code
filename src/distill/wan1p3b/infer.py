@@ -13,16 +13,24 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--checkpoint', required=True)
     p.add_argument('--output', required=True)
-    p.add_argument('--steps', type=int, default=4)
+    p.add_argument('--steps', type=int, default=2)
     p.add_argument('--limit', type=int, default=2)
+    p.add_argument('--model-root', help='Matching upstream base model directory')
+    p.add_argument('--metadata', help='Evaluation JSONL with 21-frame six-view videos')
     args = p.parse_args()
+    if args.limit < 1:
+        p.error('--limit must be positive')
     checkpoint = Path(args.checkpoint)
     cfg = json.loads((checkpoint.parent/'config.json').read_text())
-    common.validate(cfg)
+    # Inference needs the released DiT, not the private SFT teacher.
+    cfg['teacher_checkpoint'] = str(checkpoint)
+    if args.model_root: cfg['model_root'] = args.model_root
+    if args.metadata: cfg['metadata'] = args.metadata
+    cfg['inference_steps'] = args.steps
     if args.steps < 1 or cfg['cd_grid_steps'] % args.steps:
         raise ValueError('Invalid inference grid')
     with safe_open(str(checkpoint),framework='pt',device='cpu') as f:
-        if f.metadata()['contract'] != common.CONTRACT:
+        if (f.metadata() or {}).get('contract') != common.CONTRACT:
             raise ValueError('Wrong model contract')
     torch.set_num_threads(4)
     rows = common.validate(cfg)[:args.limit]

@@ -10,8 +10,7 @@ and offline inference** workflows for Wan2.2 TI2V 5B and Wan2.1 Fun-InP 1.3B.
 
 The figure illustrates the broader project. The current code release covers the
 world-model workflows below; a closed-loop VLM navigation agent and benchmark
-runner are not included. Model weights and simulator assets are supplied
-separately.
+runner are not included. Selected model weights are available on [Hugging Face](https://huggingface.co/EmbodiedCity/SAWMAN). Simulator assets and upstream base models are supplied separately.
 
 ## Quick start
 
@@ -36,9 +35,9 @@ src/data/            AirSim collectors and chain-to-video preprocessing
 src/sft/             Native SFT trainer and command builder
 src/distill/wan5b/    5B Stage2, Stage3 and inference
 src/distill/wan1p3b/  1.3B Stage2, Stage3 and inference
-assets/              Example start-point CSV
+assets/              Overview figure and example start-point CSV
 tests/               CPU checks and synthetic-data round trip
-diffsynth/          Required upstream runtime modules (vendored)
+diffsynth/           Required upstream runtime modules (vendored)
 ```
 
 All paths in supplied configs are relative to the project root. Shell entries change to that root automatically. Put datasets under `data/`, base models under `weights/`, and outputs under `outputs/`, or change the relative paths in configs. Outputs are written directly to the chosen destination; there is no storage synchronization daemon.
@@ -165,16 +164,31 @@ CONFIG=configs/wan1p3b_stage3.json bash scripts/stage3_wan1p3b.sh \
 
 Resume requires the original matching configuration and complete eight-rank training state. Do not change process count for these distributed recipes.
 
-## 5. Inference
+## 5. Download weights and run inference
+
+The [model release](https://huggingface.co/EmbodiedCity/SAWMAN) contains the selected
+Stage3 `checkpoint-100` EMA for each backbone, with portable inference configs
+and SHA-256 checksums. They are full BF16 DiT weights, not LoRA adapters or
+standalone Diffusers pipelines. Both support two-step inference; 5B was trained
+with four-step DMD rollouts. Selection was among evaluated Stage3 EMA checkpoints
+on six representative training examples, not an independent test-set ranking.
+
+Download both models, or add `--include 'wan1p3b/*'` / `--include 'wan5b/*'` to
+select one. The HF CLI is supplied by `huggingface_hub` in the installed environment.
 
 ```bash
+hf download EmbodiedCity/SAWMAN --local-dir weights/sawman
 CUDA_VISIBLE_DEVICES=0 bash scripts/infer_wan5b.sh \
-  --checkpoint outputs/wan5b/stage3/checkpoint-100/diffusion_pytorch_model_ema.safetensors \
+  --checkpoint weights/sawman/wan5b/diffusion_pytorch_model_ema.safetensors \
+  --model-root weights/wan5b/base --metadata data/metadata.jsonl \
   --output outputs/eval/wan5b_2step --steps 2 --limit 2
 CUDA_VISIBLE_DEVICES=0 bash scripts/infer_wan1p3b.sh \
-  --checkpoint outputs/wan1p3b/stage3/checkpoint-100/diffusion_pytorch_model_ema.safetensors \
-  --output outputs/eval/wan1p3b_4step --steps 4 --limit 2
+  --checkpoint weights/sawman/wan1p3b/diffusion_pytorch_model_ema.safetensors \
+  --model-root weights/wan1p3b/base --metadata data/metadata.jsonl \
+  --output outputs/eval/wan1p3b_2step --steps 2 --limit 2
 ```
+
+Supply the base files listed above and your own metadata/videos. Public inference initializes the DiT directly from the downloaded EMA; separate SAWMAN SFT and Stage2 weights are unnecessary. The adjacent `config.json` must accompany the weight file. Base paths and metadata can be overridden as shown. These files do not contain optimizer state for resuming training.
 
 Both entries support two/four steps and select the first metadata rows. Their training-data evaluation helpers may encode reference GT for cache preparation; future GT values do not enter student prediction. Use the matching native entry: 5B clamps the observed first latent; 1.3B conditions via CLIP plus masked-video `y` and generates all six latent positions. Do not route these weights through a causal CFPP adapter.
 
@@ -185,6 +199,12 @@ bash scripts/check.sh
 ```
 
 Checks cover syntax, shell parsing, relative config paths, SFT command construction, 21-frame action boundaries, inverse labels, synthetic PNG→MP4→metadata round trips, and small CPU CD/DMD contract tests. They require no model downloads, AirSim connection or GPU training. This reorganized release has not repeated full SFT/distillation training or simulator collection. The upstream numerical model implementation is retained; portability checks are not an end-to-end training reproduction.
+
+## Contributing
+
+Preserve model-specific conditioning and 21-frame action boundaries. Run
+`scripts/check.sh` before submitting changes, distinguish CPU checks from GPU
+evaluations, and keep credentials, weights, data and experiment logs out of Git.
 
 ## License and attribution
 

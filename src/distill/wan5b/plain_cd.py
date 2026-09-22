@@ -193,6 +193,9 @@ def evaluate(cfg, rows, args):
                 raise ValueError("Checkpoint was not trained with this plain-navigation CD contract")
         trained_cfg = json.loads(Path(args.checkpoint).with_name("config.json").read_text())
         for key in ("height", "width", "num_frames", "sigma_shift", "teacher_checkpoint", "teacher_guidance", "negative_prompt"):
+            # Public inference initializes directly from the selected student.
+            if key == "teacher_checkpoint" and getattr(args, "inference_only", False):
+                continue
             if trained_cfg[key] != cfg[key]:
                 raise ValueError(f"Inference/training contract mismatch: {key}")
         pipe.dit.load_state_dict(load_file(args.checkpoint), strict=True)

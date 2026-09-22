@@ -17,6 +17,7 @@ dependencies = [
     "imageio",
     "imageio[ffmpeg]",
     "safetensors",
+    "huggingface_hub>=0.34,<1.0",
     "einops",
     "sentencepiece",
     "protobuf",
